@@ -1,6 +1,7 @@
 use super::parser::{parse_metadata, parse_colors, Colors};
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
 pub fn apply_theme(theme_name: &str, home: &str) -> Result<(), Box<dyn std::error::Error>> {
     // 1. Parse metadata to know what to generate
@@ -84,6 +85,17 @@ color15 {bright_white}
     
     fs::write(&config_path, content)?;
     println!("✓ Generated: {}", config_path);
+    
+    // Reload kitty
+    let result = Command::new("killall")
+        .args(["-SIGUSR1", "kitty"])
+        .output();
+    
+    match result {
+        Ok(_) => println!("  ↻ Reloaded kitty"),
+        Err(_) => println!("  ⚠ Could not reload kitty (not running?)"),
+    }
+    
     Ok(())
 }
 
@@ -140,6 +152,17 @@ fn generate_waybar_config(colors: &Colors, home: &str) -> Result<(), Box<dyn std
     
     fs::write(&config_path, content)?;
     println!("✓ Generated: {}", config_path);
+    
+    // Reload waybar
+    let result = Command::new("killall")
+        .args(["-SIGUSR2", "waybar"])
+        .output();
+    
+    match result {
+        Ok(_) => println!("  ↻ Reloaded waybar"),
+        Err(_) => println!("  ⚠ Could not reload waybar (not running?)"),
+    }
+    
     Ok(())
 }
 
@@ -202,6 +225,17 @@ general {{
     
     fs::write(&config_path, content)?;
     println!("✓ Generated: {}", config_path);
+    
+    // Reload hyprland
+    let result = Command::new("hyprctl")
+        .args(["reload"])
+        .output();
+    
+    match result {
+        Ok(_) => println!("  ↻ Reloaded hyprland"),
+        Err(_) => println!("  ⚠ Could not reload hyprland (not running?)"),
+    }
+    
     Ok(())
 }
 
