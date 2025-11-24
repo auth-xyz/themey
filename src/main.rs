@@ -1,10 +1,13 @@
 use clap::{Parser, Subcommand};
+use colored_text::Colorize;
 use git2::Repository;
+
 
 use std::fs;
 use std::io;
 use std::env;
 use std::path;
+use std::path::Path;
 
 #[derive(Parser)]
 #[command(version,about,long_about = None)]
@@ -21,6 +24,7 @@ enum Commands {
     Apply {
         theme: String,
     },
+    List,
 }
 
 fn config_folder() -> io::Result<()> {
@@ -28,6 +32,24 @@ fn config_folder() -> io::Result<()> {
     let p = format!("{}/.config/themey/themes", home);
     fs::create_dir_all(p);
     Ok(())
+}
+
+fn list_themes(p: &str) -> Vec<String> {
+    let mut v = Vec::new();
+    if let Ok(entries) = fs::read_dir(Path::new(p)) {
+        for e in entries.flatten() {
+            let p = e.path();
+            if p.is_dir() {
+                let m = p.join("metadata.toml");
+                if m.exists() {
+                    if let Some(s) = p.file_name().and_then(|x| x.to_str()) {
+                        v.push(s.to_string());
+                    }
+                }
+            }
+        }
+    }
+    v
 }
 
 fn main() {
@@ -49,12 +71,20 @@ fn main() {
                     let tree = head.peel_to_tree().unwrap();
 
                     if tree.get_path(path::Path::new("metadata.toml")).is_err() {
-                        eprintln!("\nwarning, {} might not be a valid theme!\n-> (metadata.toml not found in root)", link)
+                        let err = "-> (metadata.toml not found in root)".dim();
+                        eprintln!("\nwarning, {} might not be a valid theme!\n{}", link, format!("{}", err))
                     }
                 },
                 Err(e) => panic!("failed to clone {}", e),
             };
         },
+
+        Commands::List => {
+            let path = format!("{}/.config/themey/themes/", home);
+            for d in list_themes(&path) {
+                println!("- {}", d.yellow().italic());
+            }
+        }
 
         Commands::Apply { theme } => {
         }
