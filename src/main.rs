@@ -1,7 +1,11 @@
+mod plugins;
+
 use clap::{Parser, Subcommand};
 use colored_text::Colorize;
 use git2::Repository;
 
+use plugins::parser;
+use plugins::colors;
 
 use std::fs;
 use std::io;
@@ -87,6 +91,24 @@ fn main() {
         }
 
         Commands::Use { theme } => {
+            let base_path = format!("{}/.config/themey/themes/{}", home, theme);
+            let metadata_path = format!("{}/metadata.toml", base_path);
+            
+            let metadata = parser::parse_metadata(&metadata_path)
+                .expect("Failed to parse metadata");
+            
+            let theme_file = &metadata.files[0]; // "dark.toml"
+            let theme_path = format!("{}/{}", base_path, theme_file);
+            
+            let colors = parser::parse_colors(&theme_path)
+                .expect("Failed to parse colors");
+            
+            println!("{:#?}", colors);
+
+            match colors::apply_theme(&theme, &home) {
+                Ok(_) => {},
+                Err(e) => eprintln!("Failed to apply theme: {}", e),
+            }
         }
     }
 }
