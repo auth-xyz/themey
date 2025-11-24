@@ -21,7 +21,7 @@ enum Commands {
     Pull {
         link: String,
     },
-    Apply {
+    Use {
         theme: String,
     },
     List,
@@ -86,7 +86,7 @@ fn main() {
             }
         }
 
-        Commands::Apply { theme } => {
+        Commands::Use { theme } => {
         }
     }
 }
