@@ -10,10 +10,6 @@ pub struct MetadataFile {
 pub struct Metadata {
     pub name: String,
     pub author: String,
-    pub version: String,
-    pub description: String,
-    pub homepage: String,
-    pub variants: Vec<String>,
     pub files: Vec<String>,
     pub targets: Vec<String>,
 }

@@ -129,13 +129,13 @@ Dependencies managed via `Cargo.toml`:
 
 ```bash
 # Pull a theme from GitHub
-themey pull auth-xyz/nord-theme
+themey pull auth-xyz/neosleek-theme
 
 # List all installed themes
 themey list
 
 # Apply the theme
-themey use nord-theme
+themey use neosleek-theme
 ```
 
 ---
