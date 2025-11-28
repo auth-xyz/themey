@@ -2,6 +2,8 @@ use super::parser::{parse_metadata, parse_colors, Colors};
 use std::fs;
 use std::path::Path;
 use std::process::Command;
+use std::io::{self, Write};
+
 
 pub fn apply_theme(theme_name: &str, home: &str) -> Result<(), Box<dyn std::error::Error>> {
     // 1. Parse metadata to know what to generate
@@ -84,9 +86,6 @@ color15 {bright_white}
     }
     
     fs::write(&config_path, content)?;
-    println!("✓ Generated: {}", config_path);
-    
-    // Reload kitty
     let result = Command::new("killall")
         .args(["-SIGUSR1", "kitty"])
         .output();
@@ -151,9 +150,6 @@ fn generate_waybar_config(colors: &Colors, home: &str) -> Result<(), Box<dyn std
     }
     
     fs::write(&config_path, content)?;
-    println!("✓ Generated: {}", config_path);
-    
-    // Reload waybar
     let result = Command::new("killall")
         .args(["-SIGUSR2", "waybar"])
         .output();
@@ -224,9 +220,6 @@ general {{
     }
     
     fs::write(&config_path, content)?;
-    println!("✓ Generated: {}", config_path);
-    
-    // Reload hyprland
     let result = Command::new("hyprctl")
         .args(["reload"])
         .output();
@@ -300,7 +293,6 @@ fn generate_rofi_config(colors: &Colors, home: &str) -> Result<(), Box<dyn std::
     }
     
     fs::write(&config_path, content)?;
-    println!("✓ Generated: {}", config_path);
     Ok(())
 }
 
@@ -335,12 +327,86 @@ frame_color = \"{red}\"
     }
     
     fs::write(&config_path, content)?;
-    println!("✓ Generated: {}", config_path);
     Ok(())
 }
 
-// Helper function to convert hex to rgb format for Hyprland
 fn hex_to_rgb(hex: &str) -> String {
     let hex = hex.trim_start_matches('#');
     format!("{}", hex)
+}
+
+pub fn preview_theme_rgb(theme_name: &str, home: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let base_path = format!("{}/.config/themey/themes/{}", home, theme_name);
+    let metadata_path = format!("{}/metadata.toml", base_path);
+    let metadata = parse_metadata(&metadata_path)?;
+    
+    let theme_file = &metadata.files[0];
+    let theme_path = format!("{}/{}", base_path, theme_file);
+    let colors = parse_colors(&theme_path)?;
+    
+    println!("\n  {} by {}\n", metadata.name, metadata.author);
+    
+    draw_color_panes_rgb(&colors)?;
+    
+    println!();
+    Ok(())
+}
+
+fn draw_color_panes_rgb(colors: &Colors) -> Result<(), Box<dyn std::error::Error>> {
+    let stdout = io::stdout();
+    let mut handle = stdout.lock();
+    
+    let height = 3;
+    let pane_width = 8;
+    
+    let normal_colors = [
+        &colors.normal.black,
+        &colors.normal.red,
+        &colors.normal.green,
+        &colors.normal.yellow,
+        &colors.normal.blue,
+        &colors.normal.magenta,
+        &colors.normal.cyan,
+        &colors.normal.white,
+    ];
+    
+    let bright_colors = [
+        &colors.bright.black,
+        &colors.bright.red,
+        &colors.bright.green,
+        &colors.bright.yellow,
+        &colors.bright.blue,
+        &colors.bright.magenta,
+        &colors.bright.cyan,
+        &colors.bright.white,
+    ];
+    
+    for _ in 0..height {
+        for color in &normal_colors {
+            let (r, g, b) = hex_to_rgb_tuple(color);
+            write!(handle, "\x1b[48;2;{};{};{}m", r, g, b)?;
+            write!(handle, "{}", " ".repeat(pane_width))?;
+        }
+        write!(handle, "\x1b[0m\n")?;
+    }
+    
+    for _ in 0..height {
+        for color in &bright_colors {
+            let (r, g, b) = hex_to_rgb_tuple(color);
+            write!(handle, "\x1b[48;2;{};{};{}m", r, g, b)?;
+            write!(handle, "{}", " ".repeat(pane_width))?;
+        }
+        write!(handle, "\x1b[0m\n")?;
+    }
+    
+    handle.flush()?;
+    Ok(())
+}
+
+fn hex_to_rgb_tuple(hex: &str) -> (u8, u8, u8) {
+    let hex = hex.trim_start_matches('#');
+    let r = u8::from_str_radix(&hex[0..2], 16).unwrap_or(0);
+    let g = u8::from_str_radix(&hex[2..4], 16).unwrap_or(0);
+    let b = u8::from_str_radix(&hex[4..6], 16).unwrap_or(0);
+    (r, g, b)
 }

@@ -26,6 +26,11 @@ enum Commands {
         theme: String,
     },
     List,
+
+    Preview {
+        theme: String,
+    },
+
     Completions {
         #[arg(value_enum)]
         shell: Shell,
@@ -58,7 +63,7 @@ fn main() {
         Commands::List => {
             let path = format!("{}/.config/themey/themes/", home);
             for d in utils::list_themes(&path) {
-                println!("\n-> {}", d.blue().italic());
+                println!("-> {}", d.blue().italic());
             }
         },
         Commands::Use { theme } => {
@@ -67,6 +72,14 @@ fn main() {
                 Err(e) => eprintln!("Failed to apply theme: {}", e),
             }
         },
+        
+        Commands::Preview { theme } => {
+            match colors::preview_theme_rgb(&theme, &home) {
+                Ok(_) => {},
+                Err(e) => eprintln!("Failed to preview theme: {}", e),
+            }
+        },
+
         Commands::Completions { shell } => {
             let mut cmd = Cli::command();
             utils::print_completions(*shell, &mut cmd);
