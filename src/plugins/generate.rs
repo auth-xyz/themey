@@ -127,7 +127,7 @@ fn capture_metadata(default_name: Option<&str>) -> (Theme, String) {
 }
 
 fn capture_colors(variant_name: &str) -> Colors {
-    println!("\n=== Capturing colors for variant: {} ===\n", variant_name);
+    println!("\n-> Capturing colors for variant: {} \n", variant_name);
 
     // Capture normal colors
     println!("--- Normal Colors ---");
@@ -279,7 +279,7 @@ fn capture_colors(variant_name: &str) -> Colors {
 }
 
 pub fn create_theme_package(theme_name: Option<&str>) -> Result<(), Box<dyn std::error::Error>> {
-    println!("=== Theme Generator ===\n");
+    println!("-> Theme Generator\n");
 
     // Capture metadata
     let (theme, theme_folder) = capture_metadata(theme_name);
@@ -323,7 +323,7 @@ pub fn create_theme_package(theme_name: Option<&str>) -> Result<(), Box<dyn std:
     write(&metadata_path, metadata_str)?;
 
     println!("\n✓ Created: {}", metadata_path.display());
-    println!("\n=== Theme package created successfully in '{}' ===", theme_folder);
+    println!("\n-> Theme package created successfully in '{}'", theme_folder);
 
     Ok(())
 }
