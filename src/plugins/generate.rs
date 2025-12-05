@@ -1,7 +1,7 @@
 // For theme generation, still no interactive ui for color picking.
 
 use dialoguer::{Input, MultiSelect, theme::ColorfulTheme};
-use serde::{Serialize, Deserialize};
+use serde::Serialize;
 use std::fs::{create_dir_all, write};
 use std::path::Path;
 use super::parser::{
@@ -34,7 +34,7 @@ struct ColorFile {
     colors: Colors,
 }
 
-pub fn capture_metadata(default_name: Option<&str>) -> (Theme, String) {
+fn capture_metadata(default_name: Option<&str>) -> (Theme, String) {
     let targets = &["kitty", "waybar", "hyprland", "rofi", "dunst"];
 
     let name: String = if let Some(default) = default_name {
@@ -126,7 +126,7 @@ pub fn capture_metadata(default_name: Option<&str>) -> (Theme, String) {
     (theme, theme_folder)
 }
 
-pub fn capture_colors(variant_name: &str) -> Colors {
+fn capture_colors(variant_name: &str) -> Colors {
     println!("\n=== Capturing colors for variant: {} ===\n", variant_name);
 
     // Capture normal colors
