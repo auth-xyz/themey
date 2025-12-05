@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::fs;
 
 #[derive(Deserialize, Debug)]
@@ -19,14 +19,14 @@ pub struct ColorFile {
     pub colors: Colors,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Colors {
     pub normal: ColorSet,
     pub bright: ColorSet,
     pub special: SpecialColors,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ColorSet {
     pub black: String,
     pub red: String,
@@ -38,7 +38,7 @@ pub struct ColorSet {
     pub white: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SpecialColors {
     pub background: String,
     pub foreground: String,

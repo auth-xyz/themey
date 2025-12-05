@@ -6,6 +6,7 @@ use clap_complete::Shell;
 
 use plugins::colors;
 use plugins::utils;
+use plugins::generate;
 
 use std::env;
 use std::path::Path;
@@ -29,6 +30,11 @@ enum Commands {
 
     Preview {
         theme: String,
+    },
+    
+    Generate {
+        #[arg(required = false)]
+        name: Option<String>,
     },
 
     Completions {
@@ -77,6 +83,13 @@ fn main() {
             match colors::preview_theme_rgb(&theme, &home) {
                 Ok(_) => {},
                 Err(e) => eprintln!("Failed to preview theme: {}", e),
+            }
+        },
+
+        Commands::Generate { name } => {
+            match generate::create_theme_package(name.as_deref()) {
+                Ok(_) => {},
+                Err(e) => eprintln!("Failed to generate theme: {}", e),
             }
         },
 
