@@ -123,8 +123,11 @@ fn generate_waybar_config(colors: &Colors, home: &str) -> (String, String, Reloa
     );
     
     let reload = Some((
-        "killall".to_string(),
-        vec!["-SIGUSR2".to_string(), "waybar".to_string()],
+        "sh".to_string(),
+        vec![
+            "-c".to_string(),
+            "pkill -x waybar; waybar >/dev/null 2>&1 & disown".to_string()
+        ],
         "waybar".to_string(),
     ));
     
