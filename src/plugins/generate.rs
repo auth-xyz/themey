@@ -35,7 +35,7 @@ struct ColorFile {
 }
 
 fn capture_metadata(default_name: Option<&str>) -> (Theme, String) {
-    let targets = &["kitty", "waybar", "hyprland", "rofi", "dunst"];
+    let targets = &["kitty", "waybar", "hyprland", "rofi", "dunst", "foot"];
 
     let name: String = if let Some(default) = default_name {
         Input::with_theme(&ColorfulTheme::default())

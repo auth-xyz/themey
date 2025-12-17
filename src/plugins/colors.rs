@@ -23,6 +23,7 @@ pub fn apply_theme(theme_name: &str, home: &str) -> Result<(), Box<dyn std::erro
             "hyprland" => generate_config("hyprland", &colors, home)?,
             "rofi" => generate_config("rofi", &colors, home)?,
             "dunst" => generate_config("dunst", &colors, home)?,
+            "foot" => generate_config("foot", &colors, home)?,
             _ => eprintln!("Unknown target: {}", target),
         }
     }
