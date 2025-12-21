@@ -37,6 +37,10 @@ enum Commands {
         name: Option<String>,
     },
 
+    Update {
+        theme: String,
+    },
+
     Completions {
         #[arg(value_enum)]
         shell: Shell,
@@ -90,6 +94,13 @@ fn main() {
             match generate::create_theme_package(name.as_deref()) {
                 Ok(_) => {},
                 Err(e) => eprintln!("Failed to generate theme: {}", e),
+            }
+        },
+
+        Commands::Update { theme } => {
+            match generate::update_theme_package(&theme, &home) {
+                Ok(_) => {},
+                Err(e) => eprintln!("Failed to update theme: {}", e),
             }
         },
 

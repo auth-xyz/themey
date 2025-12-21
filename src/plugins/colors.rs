@@ -24,6 +24,8 @@ pub fn apply_theme(theme_name: &str, home: &str) -> Result<(), Box<dyn std::erro
             "rofi" => generate_config("rofi", &colors, home)?,
             "dunst" => generate_config("dunst", &colors, home)?,
             "foot" => generate_config("foot", &colors, home)?,
+            "neovim" => generate_config("neovim", &colors, home)?,
+            "gtk" => generate_config("gtk", &colors, home)?,
             _ => eprintln!("Unknown target: {}", target),
         }
     }
@@ -63,9 +65,9 @@ pub fn preview_theme_rgb(theme_name: &str, home: &str) -> Result<(), Box<dyn std
     let colors = parse_colors(&theme_path)?;
     
     println!("\n  {} by {}\n", metadata.name, metadata.author);
-    
+
     draw_color_panes_rgb(&colors)?;
-    
+
     println!();
     Ok(())
 }
